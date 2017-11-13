@@ -50,6 +50,11 @@
 	    int posX,posY;
 	}GameState;
 	
+	GameState* game;
+	
+	int screen_w = 1280;
+	int screen_h = 720;
+	
 #pragma endregion
 
 #pragma region Funcoes Glut
@@ -60,6 +65,27 @@
 		for( int i = 0; i < j; i++ ) {
 			glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, string[i] );
 		}
+	}
+	
+	void desenhaRetangulo( int x1, int y1, int x2, int y2, float r, float g, float b, int preenchido) {
+
+		glColor3f(r+.2,g+0.2,b+0.2);
+		if (preenchido)
+		{
+			glBegin(GL_QUADS);
+				glVertex2f(x1, y1);
+				glVertex2f(x2, y1);
+				glVertex2f(x2, y2);
+				glVertex2f(x1, y2);
+			glEnd();
+		}
+		glColor3f(r,g,b);
+		glBegin(GL_LINE_LOOP);
+				glVertex2f(x1, y1);
+				glVertex2f(x2, y1);
+				glVertex2f(x2, y2);
+				glVertex2f(x1, y2);
+		glEnd();
 	}
 
 	/*
@@ -79,7 +105,8 @@
 		glClear(GL_COLOR_BUFFER_BIT);			// Limpa o Buffer de cor
 		
 		glColor3f(0.0f,0.0f,0.0f);
-		displayText(50,50,"Alana");
+		displayText(10,screen_h - 50,game->p1.nome);
+        displayText(10,50,game->p2.nome);
 
 		/* 	Limpa o Buffer
 		* 	GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT ou GL_STENCIL_BUFFER_BIT
@@ -133,7 +160,7 @@
 	}
 	void * ThreadProc(void* lpv)
 	{	
-		glutInitWindowSize(1280, 720);					// Determina o tamanho da janela gráfica
+		glutInitWindowSize(screen_w, screen_h);					// Determina o tamanho da janela gráfica
 		glutInitWindowPosition(100, 100);				// Determina qual será a posição inicial da Janela
 		glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);	// Define o modo de operação da Janela Gráfica
 		glutCreateWindow("Janela de Testes");			// Cria uma janela com as configurações anteriores e com um determinado título
@@ -153,6 +180,23 @@
 
 int main(int argc, char* argv[]){
 	#pragma region Declarações Locais		
+        int tamanhoRaquete = 100;
+        
+        game = malloc(sizeof(GameState));
+        game->p1.pontos = game->p2.pontos = 0;
+        
+        
+        printf("Digite o nome do Player 1:\n");
+        scanf("%s",game->p1.nome);
+        getchar();
+        printf("Digite o nome do Player 2:\n");
+        scanf("%s",game->p2.nome);
+        getchar();
+        
+        
+        game->p1.posX = screen_w - tamanhoRaquete/2;
+        game->p2.posX = screen_w - tamanhoRaquete/2;
+
 		// ---------- Declarações de Thread ----------
 		pthread_t thread[2];						// Handle do Console
 		int H_Thread = 0;
