@@ -19,14 +19,15 @@
 typedef struct{
     char nome[100];
     int pontos;
-    int posX;
+    float posX;
 }Player;
 
 typedef struct{
     Player p1;
     Player p2;    
-    int posX,posY;
-    int directionX,directionY;
+    float posX,posY;
+    float velX, velY;
     int conectado;
+    
 }GameState;
 

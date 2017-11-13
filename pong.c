@@ -29,7 +29,7 @@
     int raquete_h = 10;	
 	int screen_w = 1280;
 	int screen_h = 720;
-	float velocidadeBolinha = 1;
+	int playerVelocity = 70;
 	
 #pragma endregion
 
@@ -107,13 +107,45 @@
 			
 		glFlush();
 	}
-
+    int playerDirection = 0;
 	void keyPressed(unsigned char key, int x, int y) {
 	    
+		printf("pressionado %d\n", key);
+		
 	    switch(key){
 	        case 27:
     	        exit(0);
 	        break;
+	        case 97:
+	        playerDirection = -1;
+            break;
+            case 100:
+	        playerDirection = 1;
+            break;
+            
+	        
+	        
+	    }
+	    
+	    
+		/*
+			Função capaz de tratar ações de teclado
+			key -> tecla pressionada
+		*/
+	}
+	
+	void keyUp(unsigned char key, int x, int y) {
+	    
+		printf("soltou %d\n", key);
+		
+	    switch(key){
+	        case 97:
+	        playerDirection = 0;
+            break;
+            case 100:
+	        playerDirection = 0;
+            break;
+	        
 	        
 	    }
 	    
@@ -158,26 +190,31 @@
 		glutFullScreen();
 		glOrtho(0, 1280, 0, 720, -1, 1);					// Define o espaço de desenho em uma matrix ortográfica
 		glutDisplayFunc(display);						// Define a função que atualizará a tela
+        glutIgnoreKeyRepeat(1);
 		glutKeyboardFunc(keyPressed);					// Define a função que tratará teclas de teclado
+		glutKeyboardUpFunc(keyUp);
 		glutMouseFunc(MouseFunc);						// Define a função que tratatá o uso do mouse
 		glutIdleFunc(display);							// Inicia a função display
-		
 		glutMainLoop();									// Inicia o laço de desenho em tela
-
 		pthread_exit(NULL);
 	}
 
 #pragma endregion
+
+
 struct timespec clockAnterior;
+
 void UpdateGame(){
     struct timespec atual;
     clock_gettime(CLOCK_REALTIME, &atual);
-    double delta = (atual.tv_sec - clockAnterior.tv_sec) + (atual.tv_nsec - clockAnterior.tv_nsec)/1000000000L;
-    printf("%lf\n", delta);
+    double delta = (atual.tv_sec - clockAnterior.tv_sec) + (atual.tv_nsec - clockAnterior.tv_nsec)/(double)1000000000;
+    //printf("%lf\n", delta);
     clockAnterior=atual;
     
-    game->posX = game->posX + velocidadeBolinha*delta;
-    game->posY = game->posY + velocidadeBolinha*delta;
+    game->p1.posX += playerDirection*delta*playerVelocity;
+    
+    game->posX = game->posX + game->velX*delta;
+    game->posY = game->posY + game->velY*delta;
     
 
 
@@ -187,9 +224,9 @@ int main(int argc, char* argv[]){
 	#pragma region Declarações Locais		
         game = malloc(sizeof(GameState));
         game->posX = screen_w/2;
-        game->posY = screen_h/2;
-        game->directionX = 1;
-        game->directionY = 1;
+        game->posY = screen_h/2 + 200;
+        game->velX = 50;
+        game->velY = -50;
         
         game->p1.pontos = game->p2.pontos = 0;
         game->p1.posX = screen_w/2 - raquete_w/2;
@@ -249,6 +286,6 @@ int main(int argc, char* argv[]){
     clock_gettime(CLOCK_REALTIME, &clockAnterior);
 	while(1){
 	    UpdateGame();
-	    usleep(500);
+	    usleep(10000);
 	}
 }
