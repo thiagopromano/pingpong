@@ -1,8 +1,12 @@
+
+
 #include "structs.h"
 
 #define PORTA 12346      // Porta de conexÃ£o na qual os clientes se conectarÃ£o
 #define FilaConexao 10   // NÃºmero de conexÃµes em fila
 #define MAXDATASIZE 2000 // Tamanho mÃ¡ximo da recepÃ§Ã£o
+
+
 
 void servidor(void *t)
 {
@@ -64,7 +68,7 @@ void servidor(void *t)
     {
 
         tamanho = sizeof(struct sockaddr_in);
-        printf("Esperando a conexao do amiguinho!")
+        printf("Esperando a conexao do amiguinho!");
         SocketCliente = accept(SocketServidor,                      // Descritor do Socket
                                (struct sockaddr *)&EnderecoCliente, // Estrutura de endereÃ§o
                                &tamanho);                           // Tamanho da estrutura
@@ -84,7 +88,7 @@ void servidor(void *t)
                 return;
             }
             int x;
-            printf("Recebendo Status\n")
+            printf("Recebendo Status\n");
             long numbytes = recv(SocketCliente,
                                  &x,
                                  MAXDATASIZE,
