@@ -1,27 +1,10 @@
 #pragma region Bibliotecas e Variáveis Globais
+
 #include "lanhouse.h"
 #define PI 3.1415
 
-// ---------- Declarações de Bibliotecas ----------
-/*
-    *	Biblioteca para implementação de threads em C para linux
-    *	Você precisará utilizar a diretriz -lpthread ao compilar
-    */
 #include <pthread.h>
-
-/*
-    *	Biblioteca só está disponível após a instalação dos pacotes de desenvolvedor
-    *	apt-get install freeglut3-dev
-    *	Você precisará utilizar as diretrizes -lGLU -lGL -lglut ao compilar
-    */
 #include <GL/glut.h>
-
-// para funcoes do gpio
-// 	#include "mylib.h"
-
-// ------------- DefiniÃ§Ãµes -------------
-
-// ---------- Declarações de Variáveis ----------
 
 GameState *game;
 int raquete_h = 100;
@@ -29,7 +12,8 @@ int raquete_w = 10;
 int screen_w = 1280;
 int screen_h = 720;
 int playerVelocity = 70;
-
+int playerDirection = 0;
+int server;
 #pragma endregion
 
 #pragma region Funcoes Glut
@@ -74,19 +58,8 @@ void desenhaCirculo(int radius, float x, float y)
 	glEnd();
 }
 
-/*
-	*	Função Display
-	*	Função que guarda tudo o que será desenhado na atualização da tela
-	*/
 void display(void)
 {
-	/* 	
-		*	Limpa o Buffer de Cor
-		* 	void glClearColor(	GLfloat red,
- 								GLfloat green,
- 								GLfloat blue,
- 								GLfloat alpha);
-		*/
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Fundo Branco
 	glClear(GL_COLOR_BUFFER_BIT);		  // Limpa o Buffer de cor
 	char buffer[4];
@@ -100,25 +73,17 @@ void display(void)
 	desenhaRetangulo(10, game->p1.posY, 10 + raquete_w, game->p1.posY + raquete_h, 1.0f, 1.0f, 1.0f, 1);
 	desenhaRetangulo(screen_w - 10, game->p2.posY, screen_w - 10 - raquete_w, game->p2.posY + raquete_h, 1.0f, 1.0f, 1.0f, 1);
 
-	// desenhaRetangulo(10,game->p1.posy,game->p1.posX+raquete_w,screen_h-10-raquete_h,1.0f,1.0f,1.0f,1);
-	// desenhaRetangulo(game->p2.posX,10,game->p2.posX+raquete_w,10+raquete_h,1.0f,1.0f,1.0f,1);
-
 	//Desenha a divisao da tela
 	desenhaRetangulo((screen_w / 2) - 1, 0, (screen_w / 2) + 1, screen_h, 1.0f, 1.0f, 1.0f, 1);
 
+    //Desenha a bolinha
 	desenhaCirculo(7, game->posX, game->posY);
-	/* 	Limpa o Buffer
-		* 	GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT ou GL_STENCIL_BUFFER_BIT
-		*/
 
 	glFlush();
 }
-int playerDirection = 0;
+
 void keyPressed(unsigned char key, int x, int y)
 {
-
-	printf("pressionado %d\n", key);
-
 	switch (key)
 	{
 	case 27:
@@ -131,59 +96,19 @@ void keyPressed(unsigned char key, int x, int y)
 		playerDirection = 1;
 		break;
 	}
-
-	/*
-			Função capaz de tratar ações de teclado
-			key -> tecla pressionada
-		*/
 }
 
 void keyUp(unsigned char key, int x, int y)
 {
-
-	printf("soltou %d\n", key);
-
 	switch (key)
 	{
-	case 97:
-		playerDirection = 0;
-		break;
-	case 100:
-		playerDirection = 0;
-		break;
-	}
-
-	/*
-			Função capaz de tratar ações de teclado
-			key -> tecla pressionada
-		*/
-}
-
-void MouseFunc(int button, int state, int x, int y)
-{
-	/*
-			Função capaz de tratar ações de mouse
-			button -> tecla pressionada
-			state  -> tecla pressionada ou não
-			x e y  -> posição do ponteiro
-		*/
-	if (button == GLUT_LEFT_BUTTON)
-	{
-		if (state == GLUT_DOWN)
-		{
-		}
-		else
-		{
-		}
-	}
-
-	if (button == GLUT_RIGHT_BUTTON)
-	{
-		if (state == GLUT_DOWN)
-		{
-		}
+    	case 97:
+    	case 100:
+    		playerDirection = 0;
+    	break;
 	}
 }
+
 void *ThreadProc(void *lpv)
 {
 	glutInitWindowSize(screen_w, screen_h);		 // Determina o tamanho da janela gráfica
@@ -196,7 +121,6 @@ void *ThreadProc(void *lpv)
 	glutIgnoreKeyRepeat(1);
 	glutKeyboardFunc(keyPressed); // Define a função que tratará teclas de teclado
 	glutKeyboardUpFunc(keyUp);
-	glutMouseFunc(MouseFunc); // Define a função que tratatá o uso do mouse
 	glutIdleFunc(display);	// Inicia a função display
 	glutMainLoop();			  // Inicia o laço de desenho em tela
 	pthread_exit(NULL);
@@ -211,10 +135,11 @@ void UpdateGame()
 	struct timespec atual;
 	clock_gettime(CLOCK_REALTIME, &atual);
 	double delta = (atual.tv_sec - clockAnterior.tv_sec) + (atual.tv_nsec - clockAnterior.tv_nsec) / (double)1000000000;
-	//printf("%lf\n", delta);
 	clockAnterior = atual;
-
-	game->p1.posY += playerDirection * delta * playerVelocity;
+    if(server)
+	    game->p1.posY += playerDirection * delta * playerVelocity;
+	else 
+	    game->p2.posY += playerDirection * delta * playerVelocity;
 
 	game->posX = game->posX + game->velX * delta;
 	game->posY = game->posY + game->velY * delta;
@@ -222,7 +147,6 @@ void UpdateGame()
 
 int main(int argc, char *argv[])
 {
-#pragma region Declarações Locais
 	game = malloc(sizeof(GameState));
 	game->posX = screen_w / 2;
 	game->posY = screen_h / 2 + 200;
@@ -233,13 +157,9 @@ int main(int argc, char *argv[])
 	game->p1.posY = screen_h / 2 - raquete_h / 2;
 	game->p2.posY = screen_h / 2 - raquete_h / 2;
 	game->conectado = 0;
-	// ---------- Declarações de Thread ----------
 	pthread_t thread[2]; // Handle do Console
 	int H_Thread = 0;
-
-#pragma endregion
-
-	int server;
+	
 	printf("Voce deseja servir o jogo ou so conectar a um outro servidor? (1 para servir, 0 para ser cliente)\n");
 	scanf("%d", &server);
 
@@ -265,7 +185,6 @@ int main(int argc, char *argv[])
 					   game);
 	}
 
-#pragma region Inicia Thread GLUT
 	glutInit(&argc, argv); // Inicia GLUT
 	usleep(1000000);
 
@@ -280,7 +199,6 @@ int main(int argc, char *argv[])
 	else
 		printf("Thread GLUT Iniciada						[ Não 0K ] \n");
 #endif
-#pragma endregion
 
 	clock_gettime(CLOCK_REALTIME, &clockAnterior);
 	while (1)
