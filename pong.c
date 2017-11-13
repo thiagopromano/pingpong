@@ -210,10 +210,23 @@ int main(int argc, char* argv[]){
 		pthread_t thread;
 		
 	
-		pthread_create( thread,
+		pthread_create( &thread,
 			NULL,
 			servidor,
 			game);
+	}
+	else{
+		printf("diga o endereco do servidor");
+		scanf("%s", enderecoServidor);
+
+		pthread_t thread;
+		
+	
+		pthread_create( &thread,
+			NULL,
+			cliente,
+			game);
+
 	}
 
     #pragma region Inicia Thread GLUT
