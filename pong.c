@@ -25,8 +25,8 @@
 // ---------- Declarações de Variáveis ----------
 
 	GameState* game;
-    int raquete_w = 100;	
-    int raquete_h = 10;	
+    int raquete_h = 100;	
+    int raquete_w = 10;	
 	int screen_w = 1280;
 	int screen_h = 720;
 	int playerVelocity = 70;
@@ -89,16 +89,19 @@
 		char buffer[4];
 		glColor3f(1.0f,1.0f,1.0f);
 		sprintf(buffer,"%d",game->p1.pontos);
-		displayText(5,screen_h/2 + 10, buffer);
+		displayText(screen_w/2 - 25,5, buffer);
 		sprintf(buffer,"%d",game->p2.pontos);
-        displayText(5,screen_h/2 - 25, buffer);
+        displayText(screen_w/2 + 10,5, buffer);
 
         //Desenha as raquetes    
-        desenhaRetangulo(game->p1.posX,screen_h-10,game->p1.posX+raquete_w,screen_h-10-raquete_h,1.0f,1.0f,1.0f,1);
-        desenhaRetangulo(game->p2.posX,10,game->p2.posX+raquete_w,10+raquete_h,1.0f,1.0f,1.0f,1);
+        desenhaRetangulo(10,game->p1.posY,10+raquete_w,game->p1.posY+raquete_h,1.0f,1.0f,1.0f,1);
+        desenhaRetangulo(screen_w -10 ,game->p2.posY,screen_w - 10 - raquete_w,game->p2.posY+raquete_h,1.0f,1.0f,1.0f,1);
+        
+        // desenhaRetangulo(10,game->p1.posy,game->p1.posX+raquete_w,screen_h-10-raquete_h,1.0f,1.0f,1.0f,1);
+        // desenhaRetangulo(game->p2.posX,10,game->p2.posX+raquete_w,10+raquete_h,1.0f,1.0f,1.0f,1);
         
         //Desenha a divisao da tela        
-        desenhaRetangulo(0,(screen_h/2)-1,screen_w,(screen_h/2)+1,1.0f,1.0f,1.0f,1);
+        desenhaRetangulo((screen_w/2)-1,0,(screen_w/2)+1,screen_h,1.0f,1.0f,1.0f,1);
         
         desenhaCirculo(7,game->posX,game->posY);
 		/* 	Limpa o Buffer
@@ -211,13 +214,10 @@ void UpdateGame(){
     //printf("%lf\n", delta);
     clockAnterior=atual;
     
-    game->p1.posX += playerDirection*delta*playerVelocity;
+    game->p1.posY += playerDirection*delta*playerVelocity;
     
     game->posX = game->posX + game->velX*delta;
     game->posY = game->posY + game->velY*delta;
-    
-
-
 }
 
 int main(int argc, char* argv[]){
@@ -229,8 +229,8 @@ int main(int argc, char* argv[]){
         game->velY = -50;
         
         game->p1.pontos = game->p2.pontos = 0;
-        game->p1.posX = screen_w/2 - raquete_w/2;
-        game->p2.posX = screen_w/2 - raquete_w/2;
+        game->p1.posY = screen_h/2 - raquete_h/2;
+        game->p2.posY = screen_h/2 - raquete_h/2;
         game->conectado = 0;
 		// ---------- Declarações de Thread ----------
 		pthread_t thread[2];						// Handle do Console

@@ -19,7 +19,7 @@
 typedef struct{
     char nome[100];
     int pontos;
-    float posX;
+    float posY;
 }Player;
 
 typedef struct{

@@ -1,4 +1,4 @@
-#define h_addr h_addr_list[0] /* for backward compatibility */
+
 
 #include "structs.h"
 
@@ -7,6 +7,7 @@
 #define MAXDATASIZE 2000 // Tamanho mÃ¡ximo da recepÃ§Ã£o
 
 char enderecoServidor[25] = "";
+
 
 void servidor(void *t)
 {
@@ -93,7 +94,7 @@ void servidor(void *t)
                                  &x,
                                  MAXDATASIZE,
                                  0);
-            game->p2.posX = x;
+            game->p2.posY = x;
             usleep(500);
         }
 
@@ -105,17 +106,17 @@ void cliente(void *t)
 {
 
     GameState *game = (GameState *)t;
-    int ClienteSocket; // Socket para comunicaÃ§Ã£o com servidor
+    int ClienteSocket; // Socket para comunica<C3><83><C2><A7><C3><83><C2><A3>o com servidor
     int numbytes;
     char buf[MAXDATASIZE];
     struct hostent *he;
     struct sockaddr_in EnderecoServidor;
     int estado = 0;
 
-    he = gethostbyname(enderecoServidor); // EndereÃ§o do servidor
+    he = gethostbyname(enderecoServidor); // Endere<C3><83><C2><A7>o do servidor
     if (he < 0)
     {
-        herror("Erro ao converter EndereÃ§o do Servidor");
+        herror("Erro ao converter Endere<C3><83><C2><A7>o do Servidor");
         exit(1);
     }
 
@@ -134,21 +135,21 @@ void cliente(void *t)
     estado = connect(ClienteSocket,
                      (struct sockaddr *)&EnderecoServidor,
                      sizeof(struct sockaddr));
-
+                     
     switch (estado)
     {
     case -1:
         perror("Erro ao conectar");
         return;
     case EADDRINUSE:
-        perror("O EndereÃ§o jÃ¡ estÃ¡ em uso");
+        perror("O Endere<C3><83><C2><A7>o j<C3><83><C2><A1> est<C3><83><C2><A1> em uso");
         return;
     default:
         break;
     }
     while (1)
     {
-        int x = game->p2.posX;
+        int x = game->p2.posY;
         numbytes = recv(ClienteSocket,
                         game,
                         MAXDATASIZE,
