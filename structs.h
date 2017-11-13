@@ -14,6 +14,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 
 typedef struct{
     char nome[100];
@@ -25,6 +26,7 @@ typedef struct{
     Player p1;
     Player p2;    
     int posX,posY;
+    int directionX,directionY;
     int conectado;
 }GameState;
 

@@ -29,6 +29,7 @@
     int raquete_h = 10;	
 	int screen_w = 1280;
 	int screen_h = 720;
+	float velocidadeBolinha = 1;
 	
 #pragma endregion
 
@@ -167,12 +168,29 @@
 	}
 
 #pragma endregion
+struct timespec clockAnterior;
+void UpdateGame(){
+    struct timespec atual;
+    clock_gettime(CLOCK_REALTIME, &atual);
+    double delta = (atual.tv_sec - clockAnterior.tv_sec) + (atual.tv_nsec - clockAnterior.tv_nsec)/1000000000L;
+    printf("%lf\n", delta);
+    clockAnterior=atual;
+    
+    game->posX = game->posX + velocidadeBolinha*delta;
+    game->posY = game->posY + velocidadeBolinha*delta;
+    
+
+
+}
 
 int main(int argc, char* argv[]){
 	#pragma region Declarações Locais		
         game = malloc(sizeof(GameState));
         game->posX = screen_w/2;
         game->posY = screen_h/2;
+        game->directionX = 1;
+        game->directionY = 1;
+        
         game->p1.pontos = game->p2.pontos = 0;
         game->p1.posX = screen_w/2 - raquete_w/2;
         game->p2.posX = screen_w/2 - raquete_w/2;
@@ -215,5 +233,9 @@ int main(int argc, char* argv[]){
 		#endif
 	#pragma endregion
 	
-	while(1){}
+    clock_gettime(CLOCK_REALTIME, &clockAnterior);
+	while(1){
+	    UpdateGame();
+	    usleep(500);
+	}
 }
