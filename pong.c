@@ -23,7 +23,6 @@
     // ---------- Declarações de Variáveis ----------
 	
 	typedef struct{
-	    char nome[100];
 	    int pontos;
 	    int posX;
 	}Player;
@@ -35,7 +34,8 @@
 	}GameState;
 	
 	GameState* game;
-	
+    int raquete_w = 100;	
+    int raquete_h = 10;	
 	int screen_w = 1280;
 	int screen_h = 720;
 	
@@ -85,13 +85,21 @@
  								GLfloat blue,
  								GLfloat alpha);
 		*/
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);	// Fundo Branco
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);	// Fundo Branco
 		glClear(GL_COLOR_BUFFER_BIT);			// Limpa o Buffer de cor
-		
-		glColor3f(0.0f,0.0f,0.0f);
-		displayText(10,screen_h - 50,game->p1.nome);
-        displayText(10,50,game->p2.nome);
+		char buffer[4];
+		glColor3f(1.0f,1.0f,1.0f);
+		sprintf(buffer,"%d",game->p1.pontos);
+		displayText(5,screen_h/2 + 10, buffer);
+		sprintf(buffer,"%d",game->p2.pontos);
+        displayText(5,screen_h/2 - 25, buffer);
 
+        //Desenha as raquetes    
+        desenhaRetangulo(game->p1.posX,screen_h-10,game->p1.posX+raquete_w,screen_h-10-raquete_h,1.0f,1.0f,1.0f,1);
+        desenhaRetangulo(game->p2.posX,10,game->p2.posX+raquete_w,10+raquete_h,1.0f,1.0f,1.0f,1);
+        
+        //Desenha a divisao da tela        
+        desenhaRetangulo(0,(screen_h/2)-1,screen_w,(screen_h/2)+1,1.0f,1.0f,1.0f,1);
 		/* 	Limpa o Buffer
 		* 	GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT ou GL_STENCIL_BUFFER_BIT
 		*/
@@ -100,8 +108,6 @@
 	}
 
 	void keyPressed(unsigned char key, int x, int y) {
-	    
-	    printf("%d\n",key);
 	    
 	    switch(key){
 	        case 27:
@@ -164,22 +170,11 @@
 
 int main(int argc, char* argv[]){
 	#pragma region Declarações Locais		
-        int tamanhoRaquete = 100;
-        
         game = malloc(sizeof(GameState));
         game->p1.pontos = game->p2.pontos = 0;
         
-        
-        printf("Digite o nome do Player 1:\n");
-        scanf("%s",game->p1.nome);
-        getchar();
-        printf("Digite o nome do Player 2:\n");
-        scanf("%s",game->p2.nome);
-        getchar();
-        
-        
-        game->p1.posX = screen_w - tamanhoRaquete/2;
-        game->p2.posX = screen_w - tamanhoRaquete/2;
+        game->p1.posX = screen_w/2 - raquete_w/2;
+        game->p2.posX = screen_w/2 - raquete_w/2;
 
 		// ---------- Declarações de Thread ----------
 		pthread_t thread[2];						// Handle do Console
