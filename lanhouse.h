@@ -1,4 +1,4 @@
-
+#define h_addr h_addr_list[0] /* for backward compatibility */
 
 #include "structs.h"
 
@@ -6,7 +6,7 @@
 #define FilaConexao 10   // NÃºmero de conexÃµes em fila
 #define MAXDATASIZE 2000 // Tamanho mÃ¡ximo da recepÃ§Ã£o
 
-
+char enderecoServidor[25] = "";
 
 void servidor(void *t)
 {
@@ -99,4 +99,72 @@ void servidor(void *t)
 
         close(SocketCliente);
     }
+}
+
+void cliente(void *t)
+{
+
+    GameState *game = (GameState *)t;
+    int ClienteSocket; // Socket para comunicaÃ§Ã£o com servidor
+    int numbytes;
+    char buf[MAXDATASIZE];
+    struct hostent *he;
+    struct sockaddr_in EnderecoServidor;
+    int estado = 0;
+
+    he = gethostbyname(enderecoServidor); // EndereÃ§o do servidor
+    if (he < 0)
+    {
+        herror("Erro ao converter EndereÃ§o do Servidor");
+        exit(1);
+    }
+
+    ClienteSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (ClienteSocket == -1)
+    {
+        perror("Erro ao inicar EndPoint");
+        exit(1);
+    }
+
+    EnderecoServidor.sin_family = AF_INET;
+    EnderecoServidor.sin_port = htons(PORTA);
+    EnderecoServidor.sin_addr = *((struct in_addr *)he->h_addr);
+    bzero(&(EnderecoServidor.sin_zero), 8);
+
+    estado = connect(ClienteSocket,
+                     (struct sockaddr *)&EnderecoServidor,
+                     sizeof(struct sockaddr));
+
+    switch (estado)
+    {
+    case -1:
+        perror("Erro ao conectar");
+        return;
+    case EADDRINUSE:
+        perror("O EndereÃ§o jÃ¡ estÃ¡ em uso");
+        return;
+    default:
+        break;
+    }
+    while (1)
+    {
+        int x = game->p2.posX;
+        numbytes = recv(ClienteSocket,
+                        game,
+                        MAXDATASIZE,
+                        0);
+        if (send(ClienteSocket, &x, sizeof(int), 0) == -1)
+        {
+            perror("Faio Enviar");
+            return;
+        }
+        if (numbytes <= 0)
+        {
+            perror("Problemas ao receber");
+            exit(1);
+        }
+    }
+    close(ClienteSocket);
+
+    return;
 }
