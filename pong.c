@@ -99,7 +99,7 @@
         //Desenha a divisao da tela        
         desenhaRetangulo(0,(screen_h/2)-1,screen_w,(screen_h/2)+1,1.0f,1.0f,1.0f,1);
         
-        desenhaCirculo(7,100,100);
+        desenhaCirculo(7,game->posX,game->posY);
 		/* 	Limpa o Buffer
 		* 	GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT ou GL_STENCIL_BUFFER_BIT
 		*/
@@ -175,18 +175,6 @@ int main(int argc, char* argv[]){
         game->p1.posX = screen_w/2 - raquete_w/2;
         game->p2.posX = screen_w/2 - raquete_w/2;
         game->conectado = 0;
-        
-        printf("Digite o nome do Player 1:\n");
-        scanf("%s",game->p1.nome);
-        getchar();
-        printf("Digite o nome do Player 2:\n");
-        scanf("%s",game->p2.nome);
-        getchar();
-        
-        
-        game->p1.posX = screen_w - tamanhoRaquete/2;
-        game->p2.posX = screen_w - tamanhoRaquete/2;
-
 		// ---------- Declarações de Thread ----------
 		pthread_t thread[2];						// Handle do Console
 		int H_Thread = 0;
@@ -194,7 +182,7 @@ int main(int argc, char* argv[]){
 	#pragma endregion
     
 	int server;
-	printf("Voce deseja servir o jogo ou so conectar a um outro servidor? (1 para servir, 0 para ser cliente)");
+	printf("Voce deseja servir o jogo ou so conectar a um outro servidor? (1 para servir, 0 para ser cliente)\n");
 	scanf("%d", &server);
 
 	if (server)
