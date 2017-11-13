@@ -153,6 +153,7 @@ void cliente(void *t)
                         game,
                         MAXDATASIZE,
                         0);
+        game->p2.posY=y;
         if (send(ClienteSocket, &y, sizeof(float), 0) == -1)
         {
             perror("Faio Enviar");
