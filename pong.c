@@ -171,6 +171,8 @@
 int main(int argc, char* argv[]){
 	#pragma region Declarações Locais		
         game = malloc(sizeof(GameState));
+        game->posX = screen_w/2;
+        game->posY = screen_h/2;
         game->p1.pontos = game->p2.pontos = 0;
         game->p1.posX = screen_w/2 - raquete_w/2;
         game->p2.posX = screen_w/2 - raquete_w/2;
