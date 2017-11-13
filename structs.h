@@ -16,18 +16,19 @@
 #include <string.h>
 #include <time.h>
 
-typedef struct{
+typedef struct
+{
     char nome[100];
     int pontos;
     float posY;
-}Player;
+} Player;
 
-typedef struct{
+typedef struct
+{
     Player p1;
-    Player p2;    
-    float posX,posY;
+    Player p2;
+    float posX, posY;
     float velX, velY;
     int conectado;
-    
-}GameState;
 
+} GameState;

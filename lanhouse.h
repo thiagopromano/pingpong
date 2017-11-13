@@ -8,7 +8,6 @@
 
 char enderecoServidor[25] = "";
 
-
 void servidor(void *t)
 {
     GameState *game = (GameState *)t;
@@ -135,7 +134,7 @@ void cliente(void *t)
     estado = connect(ClienteSocket,
                      (struct sockaddr *)&EnderecoServidor,
                      sizeof(struct sockaddr));
-                     
+
     switch (estado)
     {
     case -1:
