@@ -15,6 +15,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <time.h>
+#include <pthread.h>
+#include <GL/glut.h>
 
 typedef struct
 {

@@ -3,9 +3,6 @@
 #include "lanhouse.h"
 #define PI 3.1415
 
-#include <pthread.h>
-#include <GL/glut.h>
-
 GameState *game;
 int raquete_h = 100;
 int raquete_w = 10;
@@ -115,7 +112,7 @@ void *ThreadProc(void *lpv)
 	glutInitWindowPosition(100, 100);			 // Determina qual será a posição inicial da Janela
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB); // Define o modo de operação da Janela Gráfica
 	glutCreateWindow("Janela de Testes");		 // Cria uma janela com as configurações anteriores e com um determinado título
-	glutFullScreen();
+// 	glutFullScreen();
 	glOrtho(0, 1280, 0, 720, -1, 1); // Define o espaço de desenho em uma matrix ortográfica
 	glutDisplayFunc(display);		 // Define a função que atualizará a tela
 	glutIgnoreKeyRepeat(1);
