@@ -4,6 +4,8 @@
 	#include <stdlib.h>
 	#include <unistd.h>
 	#include <string.h>
+	
+	#define PI 3.1415
     /*
     *	Biblioteca para implementação de threads em C para linux
     *	Você precisará utilizar a diretriz -lpthread ao compilar
@@ -71,6 +73,13 @@
 				glVertex2f(x1, y2);
 		glEnd();
 	}
+	
+	void desenhaCirculo(int radius, float x, float y){
+	    glBegin(GL_POLYGON);
+		for(double i = 0; i < 10 * PI; i += PI / 6) //<-- Change this Value
+ 					glVertex3f((cos(i) * radius) + x, (sin(i) * radius) + y, 0.0);
+		glEnd();
+	}
 
 	/*
 	*	Função Display
@@ -100,6 +109,8 @@
         
         //Desenha a divisao da tela        
         desenhaRetangulo(0,(screen_h/2)-1,screen_w,(screen_h/2)+1,1.0f,1.0f,1.0f,1);
+        
+        desenhaCirculo(7,100,100);
 		/* 	Limpa o Buffer
 		* 	GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT ou GL_STENCIL_BUFFER_BIT
 		*/
