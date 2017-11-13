@@ -1,3 +1,4 @@
+
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -24,4 +25,6 @@ typedef struct{
     Player p1;
     Player p2;    
     int posX,posY;
+    int conectado;
 }GameState;
+

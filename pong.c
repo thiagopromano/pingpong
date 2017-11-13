@@ -1,8 +1,8 @@
 #pragma region Bibliotecas e Variáveis Globais
-
-	#include "structs.h"
+	#include "lanhouse.h"
 	#define PI 3.1415
 
+	// ---------- Declarações de Bibliotecas ----------
     /*
     *	Biblioteca para implementação de threads em C para linux
     *	Você precisará utilizar a diretriz -lpthread ao compilar
@@ -172,9 +172,20 @@ int main(int argc, char* argv[]){
 	#pragma region Declarações Locais		
         game = malloc(sizeof(GameState));
         game->p1.pontos = game->p2.pontos = 0;
-        
         game->p1.posX = screen_w/2 - raquete_w/2;
         game->p2.posX = screen_w/2 - raquete_w/2;
+        game->conectado = 0;
+        
+        printf("Digite o nome do Player 1:\n");
+        scanf("%s",game->p1.nome);
+        getchar();
+        printf("Digite o nome do Player 2:\n");
+        scanf("%s",game->p2.nome);
+        getchar();
+        
+        
+        game->p1.posX = screen_w - tamanhoRaquete/2;
+        game->p2.posX = screen_w - tamanhoRaquete/2;
 
 		// ---------- Declarações de Thread ----------
 		pthread_t thread[2];						// Handle do Console
@@ -188,7 +199,13 @@ int main(int argc, char* argv[]){
 
 	if (server)
 	{
-		servidor();
+		pthread_t thread;
+		
+	
+		pthread_create( thread,
+			NULL,
+			servidor,
+			game);
 	}
 
     #pragma region Inicia Thread GLUT
