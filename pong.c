@@ -1,11 +1,8 @@
 #pragma region Bibliotecas e Variáveis Globais
-	// ---------- Declarações de Bibliotecas ----------
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <unistd.h>
-	#include <string.h>
-	
+
+	#include "structs.h"
 	#define PI 3.1415
+
     /*
     *	Biblioteca para implementação de threads em C para linux
     *	Você precisará utilizar a diretriz -lpthread ao compilar
@@ -22,19 +19,11 @@
     // para funcoes do gpio
 // 	#include "mylib.h"
 
-    // ---------- Declarações de Variáveis ----------
-	
-	typedef struct{
-	    int pontos;
-	    int posX;
-	}Player;
-	
-	typedef struct{
-	    Player p1;
-	    Player p2;    
-	    int posX,posY;
-	}GameState;
-	
+
+// ------------- DefiniÃ§Ãµes -------------
+
+// ---------- Declarações de Variáveis ----------
+
 	GameState* game;
     int raquete_w = 100;	
     int raquete_h = 10;	
@@ -193,6 +182,15 @@ int main(int argc, char* argv[]){
 
 	#pragma endregion
     
+	int server;
+	printf("Voce deseja servir o jogo ou so conectar a um outro servidor? (1 para servir, 0 para ser cliente)");
+	scanf("%d", &server);
+
+	if (server)
+	{
+		servidor();
+	}
+
     #pragma region Inicia Thread GLUT
 		glutInit(&argc, argv);						// Inicia GLUT
 		usleep(1000000);
