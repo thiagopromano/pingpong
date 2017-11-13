@@ -1,20 +1,7 @@
 #pragma region Bibliotecas e Variáveis Globais
 	// ---------- Declarações de Bibliotecas ----------
-	#include <arpa/inet.h>
-	#include <errno.h>
-	#include <fcntl.h>
-	#include <netdb.h>
-	#include <netinet/in.h>
-	#include <pthread.h>
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <string.h>
-	#include <sys/socket.h>
-	#include <sys/stat.h>
-	#include <sys/types.h>
-	#include <sys/wait.h>
-	#include <unistd.h>
-	#include <string.h>
+
+	#include "structs.h"
     /*
     *	Biblioteca para implementação de threads em C para linux
     *	Você precisará utilizar a diretriz -lpthread ao compilar
@@ -33,23 +20,10 @@
 
 
 // ------------- DefiniÃ§Ãµes -------------
-#define PORTA 12346                         // Porta de conexÃ£o na qual os clientes se conectarÃ£o
-#define MAXDATASIZE 1000 			// Tamanho mÃ¡ximo da recepÃ§Ã£o
 
     // ---------- Declarações de Variáveis ----------
-	
-	typedef struct{
-	    char nome[100];
-	    int pontos;
-	    int posX;
-	}Player;
-	
-	typedef struct{
-	    Player p1;
-	    Player p2;    
-	    int posX,posY;
-	}GameState;
-	
+
+
 	GameState* game;
 	
 	int screen_w = 1280;
