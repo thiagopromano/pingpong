@@ -1,7 +1,18 @@
 #pragma region Bibliotecas e Variáveis Globais
 	// ---------- Declarações de Bibliotecas ----------
+	#include <arpa/inet.h>
+	#include <errno.h>
+	#include <fcntl.h>
+	#include <netdb.h>
+	#include <netinet/in.h>
+	#include <pthread.h>
 	#include <stdio.h>
 	#include <stdlib.h>
+	#include <string.h>
+	#include <sys/socket.h>
+	#include <sys/stat.h>
+	#include <sys/types.h>
+	#include <sys/wait.h>
 	#include <unistd.h>
 	#include <string.h>
     /*
@@ -19,6 +30,11 @@
 	
     // para funcoes do gpio
 // 	#include "mylib.h"
+
+
+// ------------- DefiniÃ§Ãµes -------------
+#define PORTA 12346                         // Porta de conexÃ£o na qual os clientes se conectarÃ£o
+#define MAXDATASIZE 1000 			// Tamanho mÃ¡ximo da recepÃ§Ã£o
 
     // ---------- Declarações de Variáveis ----------
 	
@@ -143,6 +159,15 @@ int main(int argc, char* argv[]){
 
 	#pragma endregion
     
+	int server;
+	printf("Voce deseja servir o jogo ou so conectar a um outro servidor? (1 para servir, 0 para ser cliente)");
+	scanf("%d", &server);
+
+	if (server)
+	{
+		servidor();
+	}
+
     #pragma region Inicia Thread GLUT
 		glutInit(&argc, argv);						// Inicia GLUT
 		usleep(1000000);
