@@ -148,6 +148,7 @@ void cliente(void *t)
     }
     while (1)
     {
+        usleep(1000);
         float y = game->p2.posY;
         numbytes = recv(ClienteSocket,
                         game,
