@@ -156,11 +156,13 @@ void cliente(void *t)
             return;
         }
         GameState temp;
+
+        
         numbytes = recv(ClienteSocket,
                         &temp,
                         MAXDATASIZE,
                         0);
-        temp.p2.posY = y;
+        temp.p2.posY = game->p2.posY;
         memcpy(game,&temp,sizeof(GameState));
         
         if (numbytes <= 0)
