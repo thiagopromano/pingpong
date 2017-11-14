@@ -168,8 +168,14 @@ void UpdateGame()
 
 	game->posX = game->posX + game->velX * delta;
 	game->posY = game->posY + game->velY * delta;
-	game->velX +=0.05*delta;
-	game->velY +=0.05*delta;
+	if (game->velX > 0)
+		game->velX += 5.5*delta;
+	else
+		game->velX -= 5.5*delta;	
+	if (game->velY > 0)
+		game->velY += 5.5*delta;
+	else
+		game->velY -= 5.5*delta;
 	//rebate parede
 	if (game->posY < ballRadius || game->posY > screen_h - ballRadius)
 	{
@@ -179,15 +185,19 @@ void UpdateGame()
 	//perdeu
 	if (game->posX < 0)
 	{
-		game->p1.pontos++;
-		game->posX = 0;
-		game->posY = 0;
+		game->p2.pontos++;
+		game->posX = screen_h/2;
+		game->posY = screen_w/2;
 		game->velX = initialVelocity;
 		game->velY = initialVelocity;
 	}
 	if (game->posX > screen_w)
 	{
-		game->p2.pontos++;
+		game->p1.pontos++;
+		game->posX = screen_h/2;
+		game->posY = screen_w/2;
+		game->velX = initialVelocity;
+		game->velY = initialVelocity;
 	}
 
 	if ((game->posX + ballRadius < distancePlayer + raquete_w && game->posX > distancePlayer) &&
@@ -204,7 +214,7 @@ void UpdateGame()
 	}
 
 	if ((game->posX - ballRadius < screen_w - distancePlayer + raquete_w && game->posX + ballRadius > screen_w - distancePlayer) &&
-		(game->posY < game->p2.posY + raquete_h) && game->posY > game->p2.posY - raquete_h)
+		(game->posY < game->p2.posY + raquete_h) && game->posY > game->p2.posY - raquete_h-ballRadius)
 	{
 		game->velX *=-1;
 		game->posX = screen_w - distancePlayer-raquete_w - ballRadius;
