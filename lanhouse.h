@@ -155,11 +155,13 @@ void cliente(void *t)
             perror("Faio Enviar");
             return;
         }
+        GameState temp;
         numbytes = recv(ClienteSocket,
-                        game,
+                        &temp,
                         MAXDATASIZE,
                         0);
-        game->p2.posY = y;
+        temp.p2.posY = y;
+        memcpy(game,&temp,sizeof(GameState));
         
         if (numbytes <= 0)
         {
