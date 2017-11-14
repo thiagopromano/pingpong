@@ -10,6 +10,9 @@ int screen_w = 1280;
 int screen_h = 720;
 int playerVelocity = 70;
 int playerDirection = 0;
+int distancePlayer = 10;
+int ballRadius = 7;
+int keys[2] = {0};
 int server;
 #pragma endregion
 
@@ -67,30 +70,33 @@ void display(void)
 	displayText(screen_w / 2 + 10, 5, buffer);
 
 	//Desenha as raquetes
-	desenhaRetangulo(10, game->p1.posY, 10 + raquete_w, game->p1.posY + raquete_h, 1.0f, 1.0f, 1.0f, 1);
-	desenhaRetangulo(screen_w - 10, game->p2.posY, screen_w - 10 - raquete_w, game->p2.posY + raquete_h, 1.0f, 1.0f, 1.0f, 1);
+	desenhaRetangulo(distancePlayer, game->p1.posY, distancePlayer + raquete_w, game->p1.posY + raquete_h, 1.0f, 1.0f, 1.0f, 1);
+	desenhaRetangulo(screen_w - distancePlayer, game->p2.posY, screen_w - distancePlayer - raquete_w, game->p2.posY + raquete_h, 1.0f, 1.0f, 1.0f, 1);
 
 	//Desenha a divisao da tela
 	desenhaRetangulo((screen_w / 2) - 1, 0, (screen_w / 2) + 1, screen_h, 1.0f, 1.0f, 1.0f, 1);
 
-    //Desenha a bolinha
-	desenhaCirculo(7, game->posX, game->posY);
+	//Desenha a bolinha
+	desenhaCirculo(ballRadius, game->posX, game->posY);
 
 	glFlush();
 }
 
 void keyPressed(unsigned char key, int x, int y)
 {
+	printf("%d\n", key);
 	switch (key)
 	{
 	case 27:
 		exit(0);
 		break;
-	case 97:
-		playerDirection = -1;
-		break;
-	case 100:
+	case 119:
+		keys[0] = 1;
 		playerDirection = 1;
+		break;
+	case 115:
+		keys[1] = 1;
+		playerDirection = -1;
 		break;
 	}
 }
@@ -99,10 +105,20 @@ void keyUp(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
-    	case 97:
-    	case 100:
-    		playerDirection = 0;
-    	break;
+	case 119:
+		keys[0] = 0;
+		if (keys[1])
+			playerDirection = -1;
+		else
+			playerDirection = 0;
+		break;
+	case 115:
+		keys[1] = 0;
+		if (keys[0])
+			playerDirection = 1;
+		else
+			playerDirection = 0;
+		break;
 	}
 }
 
@@ -118,8 +134,8 @@ void *ThreadProc(void *lpv)
 	glutIgnoreKeyRepeat(1);
 	glutKeyboardFunc(keyPressed); // Define a função que tratará teclas de teclado
 	glutKeyboardUpFunc(keyUp);
-	glutIdleFunc(display);	// Inicia a função display
-	glutMainLoop();			  // Inicia o laço de desenho em tela
+	glutIdleFunc(display); // Inicia a função display
+	glutMainLoop();		   // Inicia o laço de desenho em tela
 	pthread_exit(NULL);
 }
 
@@ -133,21 +149,60 @@ void UpdateGame()
 	clock_gettime(CLOCK_REALTIME, &atual);
 	double delta = (atual.tv_sec - clockAnterior.tv_sec) + (atual.tv_nsec - clockAnterior.tv_nsec) / (double)1000000000;
 	clockAnterior = atual;
-    if(server)
-	    game->p1.posY += playerDirection * delta * playerVelocity;
-	else 
-	    game->p2.posY += playerDirection * delta * playerVelocity;
+	if (server)
+		game->p1.posY += playerDirection * delta * playerVelocity;
+	else
+		game->p2.posY += playerDirection * delta * playerVelocity;
 
 	game->posX = game->posX + game->velX * delta;
 	game->posY = game->posY + game->velY * delta;
+
+	//rebate parede
+	if (game->posY < ballRadius || game->posY > screen_h - ballRadius)
+	{
+		game->velY *= -1;
+	}
+
+	//perdeu
+	if (game->posX < 0)
+	{
+		game->p1.pontos++;
+	}
+	if (game->posX > screen_w)
+	{
+		game->p2.pontos++;
+	}
+
+	if ((game->posX + ballRadius < distancePlayer + raquete_w && game->posX > distancePlayer) &&
+		(game->posY > game->p1.posY && game->posY < game->p1.posY + raquete_h))
+	{
+		game->velX *=-1;
+		game->posX =distancePlayer+raquete_w + ballRadius;
+	}
+	
+	if ((game->posX > distancePlayer + raquete_w && game->posX < distancePlayer + ballRadius + raquete_w) &&
+		(game->posY < game->p1.posY + raquete_h) && game->posY > game->p1.posY - raquete_h)
+	{
+		game->velX *=-1;
+	}
+
+	if ((game->posX + ballRadius < screen_w - distancePlayer + raquete_w && game->posX + ballRadius > screen_w - distancePlayer) &&
+		(game->posY > game->p2.posY && game->posY < game->p2.posY + raquete_h))
+	{
+		game->velX *=-1;
+		game->posX = screen_w - distancePlayer+raquete_w - ballRadius;
+	}
+
+
+	// game->posX + ballRadius  game->p)
 }
 
 int main(int argc, char *argv[])
 {
 	game = malloc(sizeof(GameState));
-	game->posX = screen_w / 2;
-	game->posY = screen_h / 2 + 200;
-	game->velX = 50;
+	game->posX = screen_w / 2 + 350;
+	game->posY = screen_h / 2;
+	game->velX = -50;
 	game->velY = -50;
 
 	game->p1.pontos = game->p2.pontos = 0;
@@ -156,7 +211,7 @@ int main(int argc, char *argv[])
 	game->conectado = 0;
 	pthread_t thread[2]; // Handle do Console
 	int H_Thread = 0;
-	
+
 	printf("Voce deseja servir o jogo ou so conectar a um outro servidor? (1 para servir, 0 para ser cliente)\n");
 	scanf("%d", &server);
 
