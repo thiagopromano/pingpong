@@ -78,7 +78,7 @@ void servidor(void *t)
             perror("Erro em aceitar conexao\n");
             continue;
         }
-
+        game->conectado = 1;
         while (1)
         {
             float y;
