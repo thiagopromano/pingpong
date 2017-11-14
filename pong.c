@@ -13,6 +13,7 @@ int playerDirection = 0;
 int distancePlayer = 10;
 int ballRadius = 7;
 int keys[2] = {0};
+int initialVelocity = 25;
 int server;
 #pragma endregion
 
@@ -177,6 +178,10 @@ void UpdateGame()
 	if (game->posX < 0)
 	{
 		game->p1.pontos++;
+		game->posX = 0;
+		game->posY = 0;
+		game->velX = initialVelocity;
+		game->velY = initialVelocity;
 	}
 	if (game->posX > screen_w)
 	{
@@ -196,8 +201,8 @@ void UpdateGame()
 		game->velX *=-1;
 	}
 
-	if ((game->posX + ballRadius < screen_w - distancePlayer + raquete_w && game->posX + ballRadius > screen_w - distancePlayer) &&
-		(game->posY > game->p2.posY && game->posY < game->p2.posY + raquete_h))
+	if ((game->posX - ballRadius < screen_w - distancePlayer + raquete_w && game->posX + ballRadius > screen_w - distancePlayer) &&
+		(game->posY < game->p2.posY + raquete_h) && game->posY > game->p2.posY - raquete_h)
 	{
 		game->velX *=-1;
 		game->posX = screen_w - distancePlayer+raquete_w - ballRadius;
