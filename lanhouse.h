@@ -81,12 +81,6 @@ void servidor(void *t)
 
         while (1)
         {
-            printf("Enviando Status\n");
-            if (send(SocketCliente, game, sizeof(GameState), 0) == -1)
-            {
-                perror("Faio Enviar");
-                return;
-            }
             float y;
             printf("Recebendo Status\n");
             long numbytes = recv(SocketCliente,
@@ -94,6 +88,12 @@ void servidor(void *t)
                                  MAXDATASIZE,
                                  0);
             game->p2.posY = y;
+            printf("Enviando Status\n");
+            if (send(SocketCliente, game, sizeof(GameState), 0) == -1)
+            {
+                perror("Faio Enviar");
+                return;
+            }
             usleep(500);
         }
 
@@ -105,7 +105,7 @@ void cliente(void *t)
 {
 
     GameState *game = (GameState *)t;
-    int ClienteSocket; 
+    int ClienteSocket;
     int numbytes;
     char buf[MAXDATASIZE];
     struct hostent *he;
@@ -150,16 +150,17 @@ void cliente(void *t)
     {
         usleep(1000);
         float y = game->p2.posY;
-        numbytes = recv(ClienteSocket,
-                        game,
-                        MAXDATASIZE,
-                        0);
-        game->p2.posY=y;
         if (send(ClienteSocket, &y, sizeof(float), 0) == -1)
         {
             perror("Faio Enviar");
             return;
         }
+        numbytes = recv(ClienteSocket,
+                        game,
+                        MAXDATASIZE,
+                        0);
+        game->p2.posY = y;
+        
         if (numbytes <= 0)
         {
             perror("Problemas ao receber");
