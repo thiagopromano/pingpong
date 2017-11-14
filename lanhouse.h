@@ -27,7 +27,7 @@ void servidor(void *t)
 
     if (SocketServidor == -1)
     {
-        perror("Erro ao iniciar EndPoint");
+        perror("Erro ao iniciar EndPoint\n");
         return;
     }
 
@@ -43,7 +43,7 @@ void servidor(void *t)
 
     if (estado == -1)
     {
-        perror("Erro ao iniciar binding");
+        perror("Erro ao iniciar binding\n");
         return;
     }
 
@@ -55,10 +55,10 @@ void servidor(void *t)
     switch (estado)
     {
     case -1:
-        perror("Houve um erro ao iniciar processo de escuta");
+        perror("Houve um erro ao iniciar processo de escuta\n");
         return;
     case EADDRINUSE:
-        perror("Outro socket estÃ¡ escutando na mesma porta");
+        perror("Outro socket estÃ¡ escutando na mesma porta\n");
         return;
     default:
         break;
@@ -68,14 +68,14 @@ void servidor(void *t)
     {
 
         tamanho = sizeof(struct sockaddr_in);
-        printf("Esperando a conexao do amiguinho!");
+        printf("Esperando a conexao do amiguinho!\n");
         SocketCliente = accept(SocketServidor,                      // Descritor do Socket
                                (struct sockaddr *)&EnderecoCliente, // Estrutura de endereÃ§o
                                &tamanho);                           // Tamanho da estrutura
 
         if (SocketCliente < 0)
         {
-            perror("Erro em aceitar conexÃ£o");
+            perror("Erro em aceitar conexao\n");
             continue;
         }
 

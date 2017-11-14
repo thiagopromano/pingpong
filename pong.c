@@ -79,6 +79,13 @@ void display(void)
 	//Desenha a bolinha
 	desenhaCirculo(ballRadius, game->posX, game->posY);
 
+	if(!game->conectado)
+	{
+		desenhaRetangulo(screen_w/2 - 120,(screen_h/2) - 34 ,screen_w/2 + 130,(screen_h/2) + 24, 1, 0, 0, 1);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		displayText(screen_w/2 - 100,(screen_h/2) - 12, "Aguardando conexao");
+	}
+
 	glFlush();
 }
 
@@ -145,6 +152,9 @@ struct timespec clockAnterior;
 
 void UpdateGame()
 {
+	if(!game->conectado)
+		return;
+		
 	struct timespec atual;
 	clock_gettime(CLOCK_REALTIME, &atual);
 	double delta = (atual.tv_sec - clockAnterior.tv_sec) + (atual.tv_nsec - clockAnterior.tv_nsec) / (double)1000000000;
@@ -226,7 +236,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		printf("diga o endereco do servidor");
+		printf("Digite o endereco do servidor\n");
 		scanf("%s", enderecoServidor);
 
 		pthread_t thread;
