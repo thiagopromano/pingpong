@@ -152,14 +152,15 @@ void *ThreadProc(void *lpv)
 struct timespec clockAnterior;
 
 void UpdateGame()
-{
-	if(!game->conectado)
-		return;
-		
+{	
 	struct timespec atual;
 	clock_gettime(CLOCK_REALTIME, &atual);
 	double delta = (atual.tv_sec - clockAnterior.tv_sec) + (atual.tv_nsec - clockAnterior.tv_nsec) / (double)1000000000;
 	clockAnterior = atual;
+	if(!game->conectado)
+		return;
+		
+
 	if (server)
 		game->p1.posY += playerDirection * delta * playerVelocity;
 	else
@@ -167,7 +168,8 @@ void UpdateGame()
 
 	game->posX = game->posX + game->velX * delta;
 	game->posY = game->posY + game->velY * delta;
-
+	game->velX +=0.05*delta;
+	game->velY +=0.05*delta;
 	//rebate parede
 	if (game->posY < ballRadius || game->posY > screen_h - ballRadius)
 	{
@@ -205,7 +207,7 @@ void UpdateGame()
 		(game->posY < game->p2.posY + raquete_h) && game->posY > game->p2.posY - raquete_h)
 	{
 		game->velX *=-1;
-		game->posX = screen_w - distancePlayer+raquete_w - ballRadius;
+		game->posX = screen_w - distancePlayer-raquete_w - ballRadius;
 	}
 
 
