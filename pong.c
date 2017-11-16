@@ -8,12 +8,13 @@ int raquete_h = 100;
 int raquete_w = 10;
 int screen_w = 1280;
 int screen_h = 720;
-int playerVelocity = 210;
+int playerVelocity = 300;
 int playerDirection = 0;
 int distancePlayer = 10;
 int ballRadius = 7;
 int keys[2] = {0};
-int initialVelocity = 25;
+int initialVelocity = 70;
+float aceleration = 1.8;
 int server;
 #pragma endregion
 
@@ -194,14 +195,7 @@ void UpdateGame()
 
 	game->posX = game->posX + game->velX * delta;
 	game->posY = game->posY + game->velY * delta;
-	if (game->velX > 0)
-		game->velX += 5.5*delta;
-	else
-		game->velX -= 5.5*delta;	
-	if (game->velY > 0)
-		game->velY += 5.5*delta;
-	else
-		game->velY -= 5.5*delta;
+	
 	//rebate parede
 	if (game->posY < ballRadius || game->posY > screen_h - ballRadius)
 	{
@@ -214,29 +208,45 @@ void UpdateGame()
 		game->p2.pontos++;
 		game->posX = screen_w/2;
 		game->posY = screen_h/2;
-		game->velX = initialVelocity;
-		game->velY = initialVelocity;
+		game->velX = initialVelocity*cos(PI/4);
+		game->velY = initialVelocity*sin(PI/4);
+		game->vel = initialVelocity;
+
 	}
 	if (game->posX > screen_w)
 	{
 		game->p1.pontos++;
 		game->posX = screen_w/2;
 		game->posY = screen_h/2;
-		game->velX = - initialVelocity;
-		game->velY = - initialVelocity;
+		game->velX = - initialVelocity*cos(PI/4);
+		game->velY = - initialVelocity*sin(PI/4);
+		game->vel = initialVelocity;
+
 	}
 
 	//Colisao do player 1
 	if ( ( game->posX - ballRadius < distancePlayer + raquete_w ) && 
 		( game->posY - ballRadius  > game->p1.posY && game->posY + ballRadius < game->p1.posY + raquete_h ) ){
-			game->velX *=-1;
+			game->vel *= aceleration;
+			float dist = game->posY - (game->p1.posY + raquete_h/2);
+			float perc = dist / ((float)raquete_h/2 + 20);
+			float ang = (perc/2)*(PI);
+			printf("dist=%f perc = %f angulo = %f\n",dist, perc, ang);
+			game->velX = cos(ang)*game->vel;
+			game->velY = sin(ang)*game->vel;
 			game->posX = distancePlayer + raquete_w + ballRadius;
 		}
 
 	//Colisao do player 2
 	if( (game->posX + ballRadius > screen_w - distancePlayer - raquete_w) &&
 		( game->posY - ballRadius > game->p2.posY && game->posY + ballRadius < game-> p2.posY + raquete_h ) ){
-			game->velX *=-1;
+			game->vel *= aceleration;
+			float dist = game->posY - (game->p2.posY + raquete_h/2);
+			float perc = dist / ((float)raquete_h/2 + 20);
+			float ang = (-perc/2)*(PI)+PI;
+			printf("dist=%f perc = %f angulo = %f\n",dist, perc, ang);
+			game->velX = cos(ang)*game->vel;
+			game->velY = sin(ang)*game->vel;
 			game->posX = screen_w - distancePlayer -raquete_w - ballRadius;
 		}
 }
@@ -248,6 +258,7 @@ int main(int argc, char *argv[])
 	game->posY = screen_h / 2;
 	game->velX = -50;
 	game->velY = -50;
+	game->vel = initialVelocity;
 
 	game->p1.pontos = game->p2.pontos = 0;
 	game->p1.posY = screen_h / 2 - raquete_h / 2;

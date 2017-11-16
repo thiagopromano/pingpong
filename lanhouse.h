@@ -82,13 +82,13 @@ void servidor(void *t)
         while (1)
         {
             float y;
-            printf("Recebendo Status\n");
+            //printf("Recebendo Status\n");
             long numbytes = recv(SocketCliente,
                                  &y,
                                  MAXDATASIZE,
                                  0);
             game->p2.posY = y;
-            printf("Enviando Status\n");
+            //printf("Enviando Status\n");
             if (send(SocketCliente, game, sizeof(GameState), 0) == -1)
             {
                 perror("Faio Enviar");

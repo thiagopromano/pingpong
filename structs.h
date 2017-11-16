@@ -31,6 +31,7 @@ typedef struct
     Player p2;
     float posX, posY;
     float velX, velY;
+    float vel;
     int conectado;
 
 } GameState;
