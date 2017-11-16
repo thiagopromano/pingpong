@@ -14,7 +14,7 @@ int distancePlayer = 10;
 int ballRadius = 7;
 int keys[2] = {0};
 int initialVelocity = 70;
-float aceleration = 1.8;
+float aceleration = 1.3;
 int server;
 #pragma endregion
 
@@ -52,17 +52,16 @@ void desenhaRetangulo(int x1, int y1, int x2, int y2, float r, float g, float b,
 	glEnd();
 }
 
-
 void desenhaLinhaPontilhada()
 {
 
 	glColor3f(1, 1, 1);
 	glBegin(GL_LINES);
-	
+
 	for (int y = 0; y < screen_h; y += 25)
 	{
-		glVertex2f(screen_w/2, y);
-		glVertex2f(screen_w/2, y+12);
+		glVertex2f(screen_w / 2, y);
+		glVertex2f(screen_w / 2, y + 12);
 	}
 	glEnd();
 }
@@ -88,7 +87,7 @@ void display(void)
 
 	//Desenha as raquetes
 	desenhaRetangulo(distancePlayer, game->p1.posY, distancePlayer + raquete_w, game->p1.posY + raquete_h, 1.0f, 1.0f, 1.0f, 1);
-	desenhaRetangulo(screen_w - distancePlayer -raquete_w, game->p2.posY, screen_w - distancePlayer, game->p2.posY+raquete_h,1.0f,1.0f,1.0f,1);
+	desenhaRetangulo(screen_w - distancePlayer - raquete_w, game->p2.posY, screen_w - distancePlayer, game->p2.posY + raquete_h, 1.0f, 1.0f, 1.0f, 1);
 
 	//Desenha a divisao da tela
 	desenhaLinhaPontilhada();
@@ -96,11 +95,11 @@ void display(void)
 	//Desenha a bolinha
 	desenhaCirculo(ballRadius, game->posX, game->posY);
 
-	if(!game->conectado)
+	if (!game->conectado)
 	{
-		desenhaRetangulo(screen_w/2 - 120,(screen_h/2) - 34 ,screen_w/2 + 130,(screen_h/2) + 24, 1, 0, 0, 1);
+		desenhaRetangulo(screen_w / 2 - 120, (screen_h / 2) - 34, screen_w / 2 + 130, (screen_h / 2) + 24, 1, 0, 0, 1);
 		glColor3f(1.0f, 1.0f, 1.0f);
-		displayText(screen_w/2 - 100,(screen_h/2) - 12, "Aguardando conexao");
+		displayText(screen_w / 2 - 100, (screen_h / 2) - 12, "Aguardando conexao");
 	}
 
 	glFlush();
@@ -168,34 +167,34 @@ void *ThreadProc(void *lpv)
 struct timespec clockAnterior;
 
 void UpdateGame()
-{	
+{
 	struct timespec atual;
 	clock_gettime(CLOCK_REALTIME, &atual);
 	double delta = (atual.tv_sec - clockAnterior.tv_sec) + (atual.tv_nsec - clockAnterior.tv_nsec) / (double)1000000000;
 	clockAnterior = atual;
-	if(!game->conectado)
+	if (!game->conectado)
 		return;
-		
 
-	if (server){
+	if (server)
+	{
 		game->p1.posY += playerDirection * delta * playerVelocity;
-		if(game->p1.posY + raquete_h > screen_h)
+		if (game->p1.posY + raquete_h > screen_h)
 			game->p1.posY = screen_h - raquete_h;
-		if(game->p1.posY < 0)
+		if (game->p1.posY < 0)
 			game->p1.posY = 0;
-
 	}
-	else{
+	else
+	{
 		game->p2.posY += playerDirection * delta * playerVelocity;
-		if(game->p2.posY + raquete_h > screen_h)
+		if (game->p2.posY + raquete_h > screen_h)
 			game->p2.posY = screen_h - raquete_h;
-		if(game->p2.posY < 0)
+		if (game->p2.posY < 0)
 			game->p2.posY = 0;
 	}
 
 	game->posX = game->posX + game->velX * delta;
 	game->posY = game->posY + game->velY * delta;
-	
+
 	//rebate parede
 	if (game->posY < ballRadius || game->posY > screen_h - ballRadius)
 	{
@@ -206,49 +205,49 @@ void UpdateGame()
 	if (game->posX < 0)
 	{
 		game->p2.pontos++;
-		game->posX = screen_w/2;
-		game->posY = screen_h/2;
-		game->velX = initialVelocity*cos(PI/4);
-		game->velY = initialVelocity*sin(PI/4);
+		game->posX = screen_w / 2;
+		game->posY = screen_h / 2;
+		game->velX = initialVelocity * cos(PI / 4);
+		game->velY = initialVelocity * sin(PI / 4);
 		game->vel = initialVelocity;
-
 	}
 	if (game->posX > screen_w)
 	{
 		game->p1.pontos++;
-		game->posX = screen_w/2;
-		game->posY = screen_h/2;
-		game->velX = - initialVelocity*cos(PI/4);
-		game->velY = - initialVelocity*sin(PI/4);
+		game->posX = screen_w / 2;
+		game->posY = screen_h / 2;
+		game->velX = -initialVelocity * cos(PI / 4);
+		game->velY = -initialVelocity * sin(PI / 4);
 		game->vel = initialVelocity;
-
 	}
 
 	//Colisao do player 1
-	if ( ( game->posX - ballRadius < distancePlayer + raquete_w ) && 
-		( game->posY - ballRadius  > game->p1.posY && game->posY + ballRadius < game->p1.posY + raquete_h ) ){
-			game->vel *= aceleration;
-			float dist = game->posY - (game->p1.posY + raquete_h/2);
-			float perc = dist / ((float)raquete_h/2 + 20);
-			float ang = (perc/2)*(PI);
-			printf("dist=%f perc = %f angulo = %f\n",dist, perc, ang);
-			game->velX = cos(ang)*game->vel;
-			game->velY = sin(ang)*game->vel;
-			game->posX = distancePlayer + raquete_w + ballRadius;
-		}
+	if ((game->posX - ballRadius < distancePlayer + raquete_w) &&
+		(game->posY - ballRadius > game->p1.posY && game->posY + ballRadius < game->p1.posY + raquete_h))
+	{
+		game->vel *= aceleration;
+		float dist = game->posY - (game->p1.posY + raquete_h / 2);
+		float perc = dist / ((float)raquete_h / 2 + 20);
+		float ang = (perc / 2) * (PI);
+		printf("dist=%f perc = %f angulo = %f\n", dist, perc, ang);
+		game->velX = cos(ang) * game->vel;
+		game->velY = sin(ang) * game->vel;
+		game->posX = distancePlayer + raquete_w + ballRadius;
+	}
 
 	//Colisao do player 2
-	if( (game->posX + ballRadius > screen_w - distancePlayer - raquete_w) &&
-		( game->posY - ballRadius > game->p2.posY && game->posY + ballRadius < game-> p2.posY + raquete_h ) ){
-			game->vel *= aceleration;
-			float dist = game->posY - (game->p2.posY + raquete_h/2);
-			float perc = dist / ((float)raquete_h/2 + 20);
-			float ang = (-perc/2)*(PI)+PI;
-			printf("dist=%f perc = %f angulo = %f\n",dist, perc, ang);
-			game->velX = cos(ang)*game->vel;
-			game->velY = sin(ang)*game->vel;
-			game->posX = screen_w - distancePlayer -raquete_w - ballRadius;
-		}
+	if ((game->posX + ballRadius > screen_w - distancePlayer - raquete_w) &&
+		(game->posY - ballRadius > game->p2.posY && game->posY + ballRadius < game->p2.posY + raquete_h))
+	{
+		game->vel *= aceleration;
+		float dist = game->posY - (game->p2.posY + raquete_h / 2);
+		float perc = dist / ((float)raquete_h / 2 + 20);
+		float ang = (-perc / 2) * (PI) + PI;
+		printf("dist=%f perc = %f angulo = %f\n", dist, perc, ang);
+		game->velX = cos(ang) * game->vel;
+		game->velY = sin(ang) * game->vel;
+		game->posX = screen_w - distancePlayer - raquete_w - ballRadius;
+	}
 }
 
 int main(int argc, char *argv[])
