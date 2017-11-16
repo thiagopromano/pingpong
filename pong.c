@@ -72,9 +72,7 @@ void display(void)
 
 	//Desenha as raquetes
 	desenhaRetangulo(distancePlayer, game->p1.posY, distancePlayer + raquete_w, game->p1.posY + raquete_h, 1.0f, 1.0f, 1.0f, 1);
-
 	desenhaRetangulo(screen_w - distancePlayer -raquete_w, game->p2.posY, screen_w - distancePlayer, game->p2.posY+raquete_h,1.0f,1.0f,1.0f,1);
-	// desenhaRetangulo(screen_w - distancePlayer, game->p2.posY, screen_w - distancePlayer - raquete_w, game->p2.posY + raquete_h, 1.0f, 1.0f, 1.0f, 1);
 
 	//Desenha a divisao da tela
 	desenhaRetangulo((screen_w / 2) - 1, 0, (screen_w / 2) + 1, screen_h, 1.0f, 1.0f, 1.0f, 1);
@@ -159,14 +157,25 @@ void UpdateGame()
 	clock_gettime(CLOCK_REALTIME, &atual);
 	double delta = (atual.tv_sec - clockAnterior.tv_sec) + (atual.tv_nsec - clockAnterior.tv_nsec) / (double)1000000000;
 	clockAnterior = atual;
-	if(!game->conectado)
-		return;
+	// if(!game->conectado)
+	// 	return;
 		
 
-	if (server)
+	if (server){
 		game->p1.posY += playerDirection * delta * playerVelocity;
-	else
+		if(game->p1.posY + raquete_h > screen_h)
+			game->p1.posY = screen_h - raquete_h;
+		if(game->p1.posY < 0)
+			game->p1.posY = 0;
+
+	}
+	else{
 		game->p2.posY += playerDirection * delta * playerVelocity;
+		if(game->p2.posY + raquete_h > screen_h)
+			game->p2.posY = screen_h - raquete_h;
+		if(game->p2.posY < 0)
+			game->p2.posY = 0;
+	}
 
 	game->posX = game->posX + game->velX * delta;
 	game->posY = game->posY + game->velY * delta;
@@ -198,30 +207,23 @@ void UpdateGame()
 		game->p1.pontos++;
 		game->posX = screen_w/2;
 		game->posY = screen_h/2;
-		game->velX = initialVelocity;
-		game->velY = initialVelocity;
+		game->velX = - initialVelocity;
+		game->velY = - initialVelocity;
 	}
 
 	//Colisao do player 1
-	if ( ( (game->posX + ballRadius) < (distancePlayer + raquete_w) && game->posX > distancePlayer) &&
-		 ( game->posY > game->p1.posY && game->posY < game->p1.posY + raquete_h) )
-	{
-		game->velX *=-1;
-		game->posX = distancePlayer + raquete_w + ballRadius;
-	}
-	
+	if ( ( game->posX - ballRadius < distancePlayer + raquete_w ) && 
+		( game->posY - ballRadius  > game->p1.posY && game->posY + ballRadius < game->p1.posY + raquete_h ) ){
+			game->velX *=-1;
+			game->posX = distancePlayer + raquete_w + ballRadius;
+		}
+
 	//Colisao do player 2
-	if ( ( (game->posX + ballRadius) > (screen_w - distancePlayer - raquete_w) && game->posX < (screen_w - distancePlayer)) &&
-		 ( game->posY > game->p2.posY && game->posY < game->p2.posY + raquete_h) )
-	// if ((game->posX - ballRadius < screen_w - distancePlayer + raquete_w && game->posX + ballRadius > screen_w - distancePlayer) &&
-		// (game->posY < game->p2.posY + raquete_h) && game->posY > game->p2.posY - raquete_h-ballRadius)
-	{
-		game->velX *=-1;
-		game->posX = screen_w - distancePlayer-raquete_w - ballRadius;
-	}
-
-
-	// game->posX + ballRadius  game->p)
+	if( (game->posX + ballRadius > screen_w - distancePlayer - raquete_w) &&
+		( game->posY - ballRadius > game->p2.posY && game->posY + ballRadius < game-> p2.posY + raquete_h ) ){
+			game->velX *=-1;
+			game->posX = screen_w - distancePlayer -raquete_w - ballRadius;
+		}
 }
 
 int main(int argc, char *argv[])
