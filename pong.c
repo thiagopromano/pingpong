@@ -8,7 +8,7 @@ int raquete_h = 100;
 int raquete_w = 10;
 int screen_w = 1280;
 int screen_h = 720;
-int playerVelocity = 70;
+int playerVelocity = 200;
 int playerDirection = 0;
 int distancePlayer = 10;
 int ballRadius = 7;
@@ -51,6 +51,20 @@ void desenhaRetangulo(int x1, int y1, int x2, int y2, float r, float g, float b,
 	glEnd();
 }
 
+void desenhaLinhaPontilhada()
+{
+
+	glColor3f(1, 1, 1);
+	glBegin(GL_LINES);
+	
+	for (int y = 0; y < screen_h; y += 25)
+	{
+		glVertex2f(screen_w/2, y);
+		glVertex2f(screen_w/2, y+12);
+	}
+	glEnd();
+}
+
 void desenhaCirculo(int radius, float x, float y)
 {
 	glBegin(GL_POLYGON);
@@ -77,7 +91,7 @@ void display(void)
 	// desenhaRetangulo(screen_w - distancePlayer, game->p2.posY, screen_w - distancePlayer - raquete_w, game->p2.posY + raquete_h, 1.0f, 1.0f, 1.0f, 1);
 
 	//Desenha a divisao da tela
-	desenhaRetangulo((screen_w / 2) - 1, 0, (screen_w / 2) + 1, screen_h, 1.0f, 1.0f, 1.0f, 1);
+	desenhaLinhaPontilhada();
 
 	//Desenha a bolinha
 	desenhaCirculo(ballRadius, game->posX, game->posY);
